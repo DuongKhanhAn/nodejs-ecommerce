@@ -5,7 +5,6 @@ const { default: helmet } = require('helmet')
 const morgan = require('morgan')
 const app = express()
 
-
 // init middlewares
 app.use(morgan("dev"))
 // morgan("combined")
