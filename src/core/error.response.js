@@ -18,6 +18,12 @@ class ErrorResponse extends Error {
     }
 }
 
+const { StatusCodes } = require('../utils/httpStatusCode')
+const {
+    statusCodes,
+    ReasonPhrases
+} = require('../utils/httpStatusCode')
+
 class ConflictRequestError extends ErrorResponse{
 
     constructor( message = ReasonStatusCode.CONFLIC, statusCode = StatusCode.FORBIDEN ){
@@ -32,7 +38,15 @@ class BadRequestError extends ErrorResponse{
     }
 }
 
+class AuthFailureError extends ErrorResponse{
+
+    constructor ( message = ReasonPhrases.UNAUTHORIZED, statusCode = StatusCodes.UNAUTHORIZED){
+        super(message, statusCode)
+    }
+}
+
 module.exports = {
     ConflictRequestError,
-    BadRequestError
+    BadRequestError,
+    AuthFailureError
 }

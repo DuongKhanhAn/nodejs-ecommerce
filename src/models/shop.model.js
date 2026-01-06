@@ -26,7 +26,7 @@ const shopeSchema = new Schema({
         enum: ['active', 'inactive'],
         default: 'inactive'
     },
-    verfity:{
+    verify:{
         type:Schema.Types.Boolean,
         default: false
     },
