@@ -2,7 +2,7 @@
 
 const { update } = require("lodash")
 const keytokenModel = require("../models/keytoken.model")
-
+const { Types } = require('mongoose')
 class keyTokenService {
     static createKeyToken = async ({ userId, publicKey, privateKey, refreshToken }) => {
         try{
@@ -26,6 +26,13 @@ class keyTokenService {
             return erro
         }
     }
-} 
+
+    static findByUserId = async ( userId ) => {
+        return await keytokenModel.findOne({ user: new Types.ObjectId(userId) }).lean()
+    }
+    static removeKeyById = async (id) => {
+        return await keytokenModel.deleteOne( id )
+    }
+}
 
 module.exports = keyTokenService
