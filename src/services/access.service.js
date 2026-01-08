@@ -23,36 +23,24 @@ class AccessService {
         check this token used?
     */
 
-    static handlerRefreshToken = async( refreshToken ) => {
-        // check token da duoc su dung?
-        const foundToken = await keyTokenService.findByRefreshToKenUsed( refreshToken)
-        // co
-        if(foundToken){
-            // decode xem la ai?
-            const { userId, email } = await verifyJWT (refreshToken, foundToken.privateKey)
-            console.log({userId, email})
-            // xoa tat ca token trong keyStore
-            await keyTokenService.deleteKeyById(userId)
+    static handlerRefreshToken = async({ keyStore, user, refreshToken }) => {
+        const { userId, email } = user;
+
+        if(keyStore.refreshTokensUsed.includes(refreshToken)){
+            await keyTokenService.deleteKeyById(userId) 
             throw new ForbiddenError(' Something wrong happened!!! Please relogin')
         }
 
-        // khong
-        const holderToken = await keyTokenService.findByRefreshToKen( refreshToken )
-        if(!holderToken) throw new AuthFailureError('Shop not registered 1')
-
-        // verifyToken
-        const { userId, email } = await verifyJWT (refreshToken, holderToken.privateKey)
-        console.log('[2]-- ', {userId, email})
-
-        // check UserId
+        if(keyStore.refreshToken !== refreshToken) throw new AuthFailureError('Shop not registered')
+        
         const foundShop = await findByEmail( {email} )
         if(!foundShop) throw new AuthFailureError('Shop not registered 2')
 
         // create 1 cap moi
-        const tokens = await createTokenPair({userId, email}, holderToken.publicKey, holderToken.privateKey)
+        const tokens = await createTokenPair({userId, email}, keyStore.publicKey, keyStore.privateKey)
 
         // update token
-        await holderToken.updateOne({
+        await keyStore.updateOne({
             $set: {
                 refreshToken: tokens.refreshToken
             },
@@ -62,16 +50,66 @@ class AccessService {
         })
 
         return {
-            user: { userId, email },
+            user,
             tokens
         }
     }
-
+        
     static logout = async (keyStore) => {
         const delKey = await keyTokenService.removeKeyById(keyStore._id)
         console.log( {delKey})
         return delKey
     }
+
+    // static handlerRefreshToken = async( refreshToken ) => {
+    //     // check token da duoc su dung?
+    //     const foundToken = await keyTokenService.findByRefreshToKenUsed( refreshToken)
+    //     // co
+    //     if(foundToken){
+    //         // decode xem la ai?
+    //         const { userId, email } = await verifyJWT (refreshToken, foundToken.privateKey)
+    //         console.log({userId, email})
+    //         // xoa tat ca token trong keyStore
+    //         await keyTokenService.deleteKeyById(userId)
+    //         throw new ForbiddenError(' Something wrong happened!!! Please relogin')
+    //     }
+
+    //     // khong
+    //     const holderToken = await keyTokenService.findByRefreshToKen( refreshToken )
+    //     if(!holderToken) throw new AuthFailureError('Shop not registered 1')
+
+    //     // verifyToken
+    //     const { userId, email } = await verifyJWT (refreshToken, holderToken.privateKey)
+    //     console.log('[2]-- ', {userId, email})
+
+    //     // check UserId
+    //     const foundShop = await findByEmail( {email} )
+    //     if(!foundShop) throw new AuthFailureError('Shop not registered 2')
+
+    //     // create 1 cap moi
+    //     const tokens = await createTokenPair({userId, email}, holderToken.publicKey, holderToken.privateKey)
+
+    //     // update token
+    //     await holderToken.updateOne({
+    //         $set: {
+    //             refreshToken: tokens.refreshToken
+    //         },
+    //         $addToSet: {
+    //             refreshTokensUsed: refreshToken // da duoc su dung de lay token moi
+    //         }
+    //     })
+
+    //     return {
+    //         user: { userId, email },
+    //         tokens
+    //     }
+    // }
+
+    // static logout = async (keyStore) => {
+    //     const delKey = await keyTokenService.removeKeyById(keyStore._id)
+    //     console.log( {delKey})
+    //     return delKey
+    // }
 
     /* 
         1 - Check email in dbs
