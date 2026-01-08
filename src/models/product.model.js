@@ -21,26 +21,26 @@ const productSchema = new Schema ({
 
 // define the product type = clothing
 const clothingSchema = new Schema({
-    brand: { type: String, require: true},
+    brand: { type: String, required: true},
     size: String,
     material: String
 }, {
-    collection: 'electronics',
+    collection: 'Clothes',
     timestamps: true
 })
 
 // define the product type = electronic
 const electronicSchema = new Schema({
-    manufacturer: { type: String, require: true},
+    manufacturer: { type: String, required: true},
     model: String,
     color: String
 }, {
-    collection: 'clothes',
+    collection: 'Electronics',
     timestamps: true
 })
 
 module.exports = {
-    produc: model( DOCUMENT_NAME, productSchema),
+    product: model( DOCUMENT_NAME, productSchema),
     electronic: model( 'Electronics', electronicSchema),
     clothing: model( 'Clothing', clothingSchema)
 }
