@@ -9,17 +9,7 @@ class ProductFactory {
         type: 'Clothing',
         payload
     */
-    // static async createProduct( type, payload ){
-    //     switch (type){
-    //         case 'Electronics':
-    //             return new Electronics(payload).createProduct()
-    //         case 'Clothing':
-    //             return new Clothing(payload).createProduct()
-    //         default:
-    //             throw new BadRequestError(`Invalid Product Types $(type)`)
-    //     }
-    // }
-        
+    
     static productRegistry = {} // key~class
     static registerProductType( type, classRef) {
         ProductFactory.productRegistry[type] = classRef
