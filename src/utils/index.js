@@ -2,7 +2,9 @@
 
 const _ = require('lodash')
 const { deleteOne } = require('../models/keytoken.model')
+const { Types } = require('mongoose')
 
+const convertToObjectIdMongodb = id => Types.ObjectId(id)
 const getInfoData = ({ fileds = [], object = {} }) => {
     return _.pick( object, fileds)
 }
@@ -46,5 +48,6 @@ module.exports = {
     getSelectData,
     unGetSelectData,
     removeUndefinedObject,
-    updateNestedObjectParser
+    updateNestedObjectParser,
+    convertToObjectIdMongodb
 }
