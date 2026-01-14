@@ -24,6 +24,34 @@ const searchProductByUser = async({ keySearch }) => {
     return results;
 }
 
+// const publishProductByShop = async({product_shop, product_id}) => {
+//     const foundShop = await product.findOneAndUpdate({
+//         product_shop: new Types.ObjectId(product_shop),
+//         _id: new Types.ObjectId(product_id)
+//     }, {
+//         $set: {
+//             isDraft: false,
+//             isPublished: true
+//         }
+//     }, { new: true })
+
+//     return foundShop ? 1 : 0
+// }
+
+// const unPublishProductByShop = async({product_shop, product_id}) => {
+//     const foundShop = await product.findOneAndUpdate({
+//         product_shop: new Types.ObjectId(product_shop),
+//         _id: new Types.ObjectId(product_id)
+//     }, {
+//         $set: {
+//             isDraft: true,
+//             isPublished: false
+//         }
+//     }, { new: true })
+
+//     return foundShop ? 1 : 0
+// }
+
 const publishProductByShop = async({product_shop, product_id}) => {
     const foundShop = await product.findOne({
         product_shop: new Types.ObjectId(product_shop),
@@ -34,11 +62,11 @@ const publishProductByShop = async({product_shop, product_id}) => {
     foundShop.isDraft = false
     foundShop.isPublished = true
     const { modifiedCount } = await foundShop.updateOne(foundShop)
-
+    
     return modifiedCount
 }
 
-const unPublishProductByShop = async() => {
+const unPublishProductByShop = async({product_shop, product_id}) => {
     const foundShop = await product.findOne({
         product_shop: new Types.ObjectId(product_shop),
         _id: new Types.ObjectId(product_id)

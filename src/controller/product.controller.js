@@ -30,7 +30,7 @@ class ProductController{
     publishProductByShop = async (req, res, next) => {
         new SuccessResponse({
             message: 'publishProductByShop success!',
-            metadata: await ProductService.publishProductByShop(req.body.product_type, {
+            metadata: await ProductService.publishProductByShop({
                 product_id: req.params.id,
                 product_shop: req.user.userId
             })
