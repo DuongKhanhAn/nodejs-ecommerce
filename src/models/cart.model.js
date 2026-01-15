@@ -27,11 +27,16 @@ const cartSchema = new Schema ({
    cart_userId: { type: Number, required: true },
 },{
     collection: COLLECTION_NAME,
-    timeseries: {
-        createdAt: 'creatdeOn',
+    timestamps: {
+        createdAt: 'createdOn',
         updatedAt: 'modifitedOn'
     }
 })
+
+// cartSchema.pre('save', function (next) {
+//     this.cart_count_product = this.cart_products.length;
+//     next();
+// });
 
 module.exports = {
     cart: model(DOCUMENT_NAME, cartSchema)
