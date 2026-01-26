@@ -1,46 +1,53 @@
 'use strict'
 
-
 const redis = require('redis')
-const { promisify } = require('util')
 const { reservationInventory } = require('../models/repositories/inventory.repo')
-const redisClient = redis.createClien()
 
-const pexpire = promisify(redisClient.pexpire).bind(redisClient)
-const setnxAsync = promisify(redisClient.setnx).bind(redisClient)
+const redisClient = redis.createClient({
+    url: 'redis://localhost:6379'
+})
 
-const acquirecLock = async (getProductById, quantity, cartId) => {
-    const key = `loack_v2026_${productId}`
-    const retryTimes = 10;
-    const expireTime = 3000; // 3s tam lock
+redisClient.connect()
+    .then(() => console.log('Connected to Redis successfully'))
+    .catch(err => console.error('Redis Connection Error', err))
 
-    for (let i = 0; i < retryTimes.length; i++) {
+redisClient.on('error', (err) => console.log('Redis Client Error', err))
+
+const acquireLock = async (productId, quantity, cartId) => {
+    const key = `lock_v2026_${productId}`
+    const retryTimes = 10
+    const expireTime = 3000  // 3s tam lock
+
+    for (let i = 0; i < retryTimes; i++) {
         // tao mot key, thang nao nam giu duoc vao thanh toan
-        const result = await setnxAsync(key, expireTime)
-        console.log(`result::`, result)
-        if(result === 1){
+        const result = await redisClient.set(key, 'lock_value', {
+            NX: true,
+            PX: expireTime
+        })
+
+        if (result === 'OK') {
             // thao tac voi inventory
-            const isReversation = await reservationInventory({
-                getProductById, quantity, cartId
+            const isReservation = await reservationInventory({
+                productId, quantity, cartId
             })
-            if(isReversation.modifiedCount){
-                await pexpire(key, expireTime)
+
+            if (isReservation.modifiedCount) {
                 return key
             }
-            return null;
-        }else{
+
+            await redisClient.del(key)
+            return null
+        } else {
             await new Promise((resolve) => setTimeout(resolve, 50))
         }
-        
     }
 }
 
-const releaseLock = async keyLock => {
-    const delAsyncKey = promisify(redisClient.del).bind(redisClient)
-    return await delAsyncKey(keyLock)
+const releaseLock = async (keyLock) => {
+    return await redisClient.del(keyLock)
 }
 
 module.exports = {
-    acquirecLock,
+    acquireLock,
     releaseLock
 }

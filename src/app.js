@@ -18,11 +18,19 @@ app.use(express.urlencoded({
     extended: true
 }))
 
+// test pub/sub redis
+require('./tests/inventory.test')
+const productTest = require('./tests/product.test')
+setTimeout(() => {
+    console.log('--- Đang thực hiện Test Publish ---')
+    productTest.purchaseProduct('product::001', 10)
+}, 1000)
 // init db
 require('./dbs/init.mongodb')
 // const { checkOverload } = require('./helpers/check.connect')
 // checkOverload()
 const { countConnect } = require('./helpers/check.connect')
+const { product } = require('./models/product.model')
 countConnect()
 
 // init routers
