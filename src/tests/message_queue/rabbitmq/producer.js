@@ -3,7 +3,7 @@ const messages = 'hello, RabbitMQ';
 
 const runProducer = async () => {
     try {
-        const connection = await amqp.connect('amqp://guest:12345@localhost')
+        const connection = await amqp.connect(process.env.RABBITMQ_URI)
         const channel = await connection.createChannel()
 
         const queueName = 'test-topic'
