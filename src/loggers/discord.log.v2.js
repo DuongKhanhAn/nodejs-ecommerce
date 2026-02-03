@@ -39,12 +39,10 @@ class LoggerService {
             title = 'Code Example' 
         } = logData;
 
-        // 1. Cấu hình màu sắc và tiêu đề dựa trên môi trường
         const isProduction = process.env.NODE_ENV === 'production';
-        const embedColor = isProduction ? 0xff0000 : 0x00ff00; // Đỏ cho Pro, Xanh cho Dev
+        const embedColor = isProduction ? 0xff0000 : 0x00ff00;
         const displayTitle = isProduction ? `🚨 [PROD] ${title}` : `🛠️ [DEV] ${title}`;
 
-        // 2. Tạo cấu trúc message
         const codeMessage = {
             content: message,
             embeds: [
@@ -52,7 +50,7 @@ class LoggerService {
                     color: embedColor,
                     title: displayTitle,
                     description: '```json\n' + JSON.stringify(code, null, 2) + '\n```',
-                    timestamp: new Date().toISOString(), // Thêm thời gian xảy ra log
+                    timestamp: new Date().toISOString(), 
                     footer: {
                         text: isProduction ? 'Hệ thống Cảnh báo ShopDev' : 'Debug Mode',
                     },
